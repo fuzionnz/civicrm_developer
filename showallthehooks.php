@@ -140,6 +140,6 @@ function _showallthehooks_wp_show_notices($args) {
     $message = '<ul><li>' . implode('</li><li>', $messages) . '</li></ul>';
   }
   print <<<EOT
-    <div class="info notice">{$message}</div>
+    <div class="notice notice-info is-dismissible">{$message}</div>
 EOT;
 }
