@@ -220,4 +220,5 @@ function _showallthehooks_wp_show_notices($args) {
   print <<<EOT
     <div class="notice notice-info is-dismissible">{$message}</div>
 EOT;
+  $_SESSION['showallthehooks_messages'] = array();
 }
