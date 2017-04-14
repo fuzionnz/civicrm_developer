@@ -16,15 +16,28 @@ require_once 'showallthehooks.hooks.php';
  * @return array of ReflectionClass objects.
  */
 function _showallthehooks_list_hooks() {
-  $class = new ReflectionClass('CRM_Utils_Hook');
-  $hooks = $class->getMethods(ReflectionMethod::IS_STATIC);
-  $ignore = ['singleton'];
-  sort($hooks);
-  $hooks = array_filter($hooks, function($m) use ($ignore) {
-    if (isset($m->name) && !in_array($m->name, $ignore)) {
-      return true;
+  if (class_exists('Civi\Core\CiviEventInspector')) {
+    // Event Inspector is available from PR10161 onwards.
+    // https://github.com/civicrm/civicrm-core/pull/10161
+    $hooks = [];
+    $inspector = new \Civi\Core\CiviEventInspector();
+    $allHooks = $inspector->getAll();
+    foreach ($allHooks as $hook) {
+      if (isset($hook['stub'])) {
+        $hooks[] = $hook;
+      }
     }
-  });
+  }
+  else {
+    $class = new ReflectionClass('CRM_Utils_Hook');
+    $hooks = $class->getMethods(ReflectionMethod::IS_STATIC);
+    $ignore = ['singleton'];
+    $hooks = array_filter($hooks, function($m) use ($ignore) {
+      if (isset($m->name) && !in_array($m->name, $ignore)) {
+        return TRUE;
+      }
+    });
+  }
   return $hooks;
 }
 
