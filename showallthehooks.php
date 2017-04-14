@@ -113,17 +113,23 @@ function _showallthehooks_debug($param, $name) {
     drupal_set_message(t('%name: @param', array('%name' => $name, '@param' => print_r($param, 1))));
   }
   elseif (function_exists('add_action')) {
+    // Format for output.
+    $output = print_r($param, 1);
     // For WordPress, we stash them in $_SESSION and display when admin_notices called.
-    $_SESSION['showallthehooks_messages'][] = [ 'param' => $param, 'name' => $name ];
+    $_SESSION['showallthehooks_messages'][] = [ 'param' => $output, 'name' => $name ];
     add_action('admin_notices', '_showallthehooks_wp_show_notices');
   }
   elseif (class_exists('JFactory')) {
+    // Format for output.
+    $output = print_r($param, 1);
     // Joomla message display.
-    JFactory::getApplication()->enqueueMessage($name . ': ' . $param);
+    JFactory::getApplication()->enqueueMessage($name . ': ' . $output);
   }
   else {
+    // Format for output.
+    $output = print_r($param, 1);
     // Core debug method. We probably won't hit this.
-    CRM_Core_Session::setStatus($param, $name, 'no-popup');
+    CRM_Core_Session::setStatus($output, $name, 'no-popup');
   }
 }
 
@@ -147,6 +153,6 @@ function _showallthehooks_wp_show_notices($args) {
     $message = '<ul><li>' . implode('</li><li>', $messages) . '</li></ul>';
   }
   print <<<EOT
-    <div class="info notice">{$message}</div>
+    <div class="notice notice-info is-dismissible">{$message}</div>
 EOT;
 }
