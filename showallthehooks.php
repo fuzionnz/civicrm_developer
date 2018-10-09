@@ -105,12 +105,16 @@ EOT;
  */
 function _showallthehooks_debug($param, $name) {
   if (function_exists('dpm')) {
-    // dpm() is a Drupal function provided by Devel module.
+    // dpm() is a Drupal/Backdrop function provided by Devel module.
     dpm($param, $name);
   }
   elseif (function_exists('drupal_set_message')) {
     // drupal_set_message() is a core Drupal function.
     drupal_set_message(t('%name: @param', array('%name' => $name, '@param' => print_r($param, 1))));
+  }
+  elseif (function_exists('backdrop_set_message')) {
+    // backdrop_set_message() is a core Backdrop function.
+    backdrop_set_message(t('%name: @param', array('%name' => $name, '@param' => print_r($param, 1))));
   }
   elseif (function_exists('add_action')) {
     // Format for output.
