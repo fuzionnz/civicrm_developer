@@ -8,6 +8,11 @@
 
 require_once 'showallthehooks.hooks.php';
 
+// if WordPress, add hook callbacks file
+if (function_exists('add_action')) {
+  require_once 'showallthehooks.wp.php';
+}
+
 /**
  * Extract a list of CiviCRM hooks.
  *
@@ -96,6 +101,62 @@ EOT;
 }
 
 /**
+ * Generate debug functions for all hooks in WordPress.
+ */
+function _showallthehooks_generate_hooks_wp() {
+  $source = '';
+  foreach (_showallthehooks_list_hooks() as $hook) {
+    $source .= _showallthehooks_generate_hook_wp($hook);
+  }
+  return <<<EOT
+<?php
+/**
+ * @file
+ * This file is generated automatically. It contains example implementations of
+ * all core CiviCRM hooks in WordPress. You can edit it to enable additional
+ * debug on any hook.
+ *
+ * To regenerate, see README.md or https://github.com/fuzionnz/contrib.showallthehooks
+ */
+
+{$source}
+EOT;
+}
+
+/**
+ * Generate a debug function for a specific hook in WordPress.
+ */
+function _showallthehooks_generate_hook_wp(ReflectionMethod $hook) {
+  $prefix = 'wp_callback_for_civicrm_';
+  $docs = $hook->getDocComment();
+  $parameters = $hook->getParameters();
+
+  $params = [];
+  foreach ($parameters as $parameter) {
+    $params[] =
+      $parameter->isPassedByReference() ?
+        '&$' . $parameter->getName() :
+        '$' . $parameter->getName();
+  }
+  $parameters = implode(', ', $params);
+  $num = count( $params );
+  $method_name = $prefix . $hook->getName();
+
+  return <<<EOT
+
+{$hook->getDocComment()}
+function {$method_name}({$parameters}) {
+  \$args = get_defined_vars();
+  \$function = preg_replace('/wp_callback_for/', 'hook', __FUNCTION__);
+  _showallthehooks_debug(\$function, 'wordpress');
+  // _showallthehooks_debug_func_args(\$function, \$args);
+}
+add_action('civicrm_{$hook->getName()}', '{$method_name}', 10, {$num});
+
+EOT;
+}
+
+/**
  * Debug a single value and its name, the best available way.
  *
  * Report which hooks got called.
@@ -159,4 +220,5 @@ function _showallthehooks_wp_show_notices($args) {
   print <<<EOT
     <div class="notice notice-info is-dismissible">{$message}</div>
 EOT;
+  $_SESSION['showallthehooks_messages'] = array();
 }

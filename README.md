@@ -14,3 +14,6 @@ If a new hook is added, or if you have hacked the hook implementation and want t
 
     cv ev 'print _showallthehooks_generate_hooks()' > showallthehooks.hooks.php
 
+For WordPress, you'll need to regenerate the WordPress hooks file with a similar command:
+
+    cv ev 'print _showallthehooks_generate_hooks_wp()' > showallthehooks.wp.php
