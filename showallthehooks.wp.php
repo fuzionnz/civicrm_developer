@@ -921,7 +921,7 @@ add_action('civicrm_custom', 'wp_callback_for_civicrm_custom', 10, 4);
    *
    * @return mixed
    */
-function wp_callback_for_civicrm_customFieldOptions($customFieldID, &$options, $detailedFormat, $selectAttributes) {
+function wp_callback_for_civicrm_customFieldOptions($customFieldID, &$options, $detailedFormat, $selectAttributes = '') {
   $args = get_defined_vars();
   $function = preg_replace('/wp_callback_for/', 'hook', __FUNCTION__);
   _showallthehooks_debug($function, 'wordpress');
