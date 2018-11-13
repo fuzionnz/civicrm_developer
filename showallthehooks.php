@@ -9,7 +9,8 @@
 require_once 'showallthehooks.hooks.php';
 
 // if WordPress, add hook callbacks file
-if (function_exists('add_action')) {
+$config = CRM_Core_Config::singleton();
+if ($config->userFramework == 'WordPress') {
   require_once 'showallthehooks.wp.php';
 }
 
